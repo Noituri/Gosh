@@ -3,7 +3,7 @@ image: golang:1.9
 variables:
   BIN_NAME: gosh
   ARTIFACTS_DIR: artifacts
-  GO_PROJECT: gitlab.com/yknomeh/gosh
+  GO_PROJECT: Gosh
 
 stages:
   - build
