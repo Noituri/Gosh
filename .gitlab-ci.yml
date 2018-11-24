@@ -3,7 +3,7 @@ image: golang:latest
 
 variables:
   # Please edit to your GitLab project
-  REPO_NAME: Gosh
+  REPO_NAME: gitlab.com/yknomeh/gosh
 
 # The problem is that to be able to use go get, one needs to put
 # the repository in the $GOPATH. So for example if your gitlab domain
@@ -20,8 +20,26 @@ before_script:
   - glide update
 
 stages:
+    - setup
     - test
     - build
+
+
+cache:
+    untracked: true
+    key: "$CI_BUILD_REF_NAME"
+    paths:
+      - vendor/
+
+
+setup:
+  stage: setup
+  image: lwolf/golang-glide:0.12.3
+  script:
+    - glide install -v
+  artifacts:
+    paths:
+      - vendor/
 
 format:
     stage: test
@@ -30,10 +48,12 @@ format:
       - go vet $(go list ./... | grep -v /vendor/)
       - go test -race $(go list ./... | grep -v /vendor/)
 
-compile:
+build:
     stage: build
+    image: lwolf/golang-glide:0.12.3
     script:
-      - go build -race -ldflags "-extldflags '-static'" -o $CI_PROJECT_DIR/mybinary
+      - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o release/shell
+      - cd release
     artifacts:
       paths:
-        - mybinary
+        - release/
