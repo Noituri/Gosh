@@ -19,8 +19,7 @@ before_script:
 build:
   stage: build
   script:
-    - dep ensure
-    - go get -u gitlab.com/yknomeh/gosh
+    - dep ensure --update
     - go build -o ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${BIN_NAME}
   artifacts:
     paths:
