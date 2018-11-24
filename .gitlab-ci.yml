@@ -1,59 +1,33 @@
-# This file is a template, and might need editing before it works on your project.
-image: golang:latest
+# Replace "projectname" and "username"
+image: golang:1.9
 
 variables:
-  # Please edit to your GitLab project
-  REPO_NAME: gitlab.com/yknomeh/gosh
-
-# The problem is that to be able to use go get, one needs to put
-# the repository in the $GOPATH. So for example if your gitlab domain
-# is gitlab.com, and that your repository is namespace/project, and
-# the default GOPATH being /go, then you'd need to have your
-# repository in /go/src/gitlab.com/namespace/project
-# Thus, making a symbolic link corrects this.
-before_script:
-  - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
-  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
-  - cd $GOPATH/src/$REPO_NAME
-  - export PATH=$PATH:$GOPATH/bin
-#  - curl https://glide.sh/get | sh
-#  - glide update
+  BIN_NAME: gosh
+  ARTIFACTS_DIR: artifacts
+  GO_PROJECT: gitlab.com/yknomeh/gosh
 
 stages:
-    - setup
-    - test
-    - build
+  - build
+  - test
 
+before_script:
+  - mkdir -p ${GOPATH}/src/${GO_PROJECT}
+  - mkdir -p ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}
+  - go get -u github.com/golang/dep/cmd/dep
+  - cp -r ${CI_PROJECT_DIR}/* ${GOPATH}/src/${GO_PROJECT}/
+  - cd ${GOPATH}/src/${GO_PROJECT}
 
-cache:
-    untracked: true
-    key: "$CI_BUILD_REF_NAME"
-    paths:
-      - vendor/
-
-
-setup:
-  stage: setup
-  image: lwolf/golang-glide:0.12.3
+build-projectname:
+  stage: build
   script:
-    - glide install -v
+    - dep ensure
+    - go build -o ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${BIN_NAME}
   artifacts:
     paths:
-      - vendor/
+      - ${ARTIFACTS_DIR}
 
-format:
-    stage: test
-    script:
-      - go fmt $(go list ./... | grep -v /vendor/)
-      - go vet $(go list ./... | grep -v /vendor/)
-      - go test -race $(go list ./... | grep -v /vendor/)
-
-build:
-    stage: build
-    image: lwolf/golang-glide:0.12.3
-    script:
-      - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o release/shell
-      - cd release
-    artifacts:
-      paths:
-        - release/
+test-projectname:
+  stage: test
+  script:
+    - dep ensure
+  - go test -v -cover ./...

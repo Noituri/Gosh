@@ -1,6 +1,0 @@
-package: Gosh
-import:
-- package: github.com/chzyer/readline
-  version: 2972be24d48e78746da79ba8e24e8b488c9880de
-- package: github.com/lucasb-eyer/go-colorful
-  version: ^1.0.0
