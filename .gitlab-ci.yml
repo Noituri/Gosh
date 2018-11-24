@@ -16,16 +16,17 @@ before_script:
   - cp -r ${CI_PROJECT_DIR}/* ${GOPATH}/src/${GO_PROJECT}/
   - cd ${GOPATH}/src/${GO_PROJECT}
 
-build-projectname:
+build:
   stage: build
   script:
     - dep ensure
+    - ls
     - go build -o ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${BIN_NAME}
   artifacts:
     paths:
       - ${ARTIFACTS_DIR}
 
-test-projectname:
+test:
   stage: test
   script:
     - dep ensure
