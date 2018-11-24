@@ -21,7 +21,7 @@ build:
   script:
     - dep ensure
     - ls
-    - go build -o ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${BIN_NAME}
+    - go build main.go -o ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${BIN_NAME}
   artifacts:
     paths:
       - ${ARTIFACTS_DIR}
