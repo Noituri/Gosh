@@ -16,8 +16,8 @@ before_script:
   - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
   - cd $GOPATH/src/$REPO_NAME
   - export PATH=$PATH:$GOPATH/bin
-  - curl https://glide.sh/get | sh
-  - glide update
+#  - curl https://glide.sh/get | sh
+#  - glide update
 
 stages:
     - setup
