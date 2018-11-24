@@ -1,2 +1,8 @@
 version 0.0.1
 - Project created
+
+version 0.0.11
+- Highlighting works
+- Executing commands works
+- Pipes and etc. works
+- exit && reload works
