@@ -1,4 +1,3 @@
-# Replace "projectname" and "username"
 image: golang:1.9
 
 variables:
@@ -30,4 +29,4 @@ test-projectname:
   stage: test
   script:
     - dep ensure
-  - go test -v -cover ./...
+    - go test -v -cover ./...
