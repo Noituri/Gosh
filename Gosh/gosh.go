@@ -1,6 +1,7 @@
 package Gosh
 
 import (
+	"Gosh/utils"
 	"bytes"
 	"fmt"
 	"github.com/chzyer/readline"
@@ -24,13 +25,25 @@ func Execute(args []string) {
 
 }
 
+func filterInput(r rune) (rune, bool) {
+	switch r {
+	case readline.CharInterrupt:
+		fmt.Println(fmt.Sprintf("%s: type \"%s\".",
+			utils.Colorize("Gosh", "#2874a6"),
+			utils.Colorize("exit", "#c0392b")),
+		)
+	}
+	return r, true
+}
+
 func Start() string {
 	rl, err := readline.NewEx(&readline.Config{
 		Prompt:          "\033[31m»\033[0m ",
 		HistoryFile:     fmt.Sprintf(`%s/history.gosh`, os.Getenv("HOME")),
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
-		Painter:		 &Highlighter{
+		FuncFilterInputRune: filterInput,
+		Painter: &Highlighter{
 			command:  "#FF00FF",
 			quote: 	  "#0F42BB",
 			argument: "#44FA12",
@@ -46,11 +59,7 @@ func Start() string {
 	for {
 		input, err := rl.Readline()
 		if err == readline.ErrInterrupt {
-			if len(input) == 0 {
-				break
-			} else {
-				continue
-			}
+			continue
 		} else if err == io.EOF {
 			break
 		}
@@ -67,9 +76,18 @@ func Start() string {
 		case "reload":
 			fmt.Println("Reloading shell")
 			goto reload
+		default:
+			cmd := GetCommand(command)
+
+			if cmd != nil {
+				if len(args) > 1 {
+					cmd.CommandExecute(args[1])
+				}
+			} else {
+				Execute(args)
+			}
 		}
 
-		Execute(args)
 	}
 
 	exit:
