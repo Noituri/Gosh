@@ -2,3 +2,4 @@
 main
 vendor
 *.lock
+release

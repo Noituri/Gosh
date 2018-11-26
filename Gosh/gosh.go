@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func Execute(args []string) {
+func Execute(args []string) string {
 	cmd := exec.Command("sh", append([]string{"-c"}, strings.Join(args, " "))...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -23,6 +23,7 @@ func Execute(args []string) {
 		fmt.Println(stderr.String())
 	}
 
+	return stderr.String()
 }
 
 func filterInput(r rune) (rune, bool) {
@@ -37,16 +38,19 @@ func filterInput(r rune) (rune, bool) {
 }
 
 func Start() string {
+
+	_, dirs := utils.GetWorkingDirectory(true)
+
 	rl, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[31m»\033[0m ",
+		Prompt:          utils.Colorize(fmt.Sprintf("%s » ", utils.Colorize(dirs[len(dirs) - 1], "#01A0CD")), "#5579BF"),
 		HistoryFile:     fmt.Sprintf(`%s/history.gosh`, os.Getenv("HOME")),
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
 		FuncFilterInputRune: filterInput,
-		Painter: &Highlighter{
-			command:  "#FF00FF",
-			quote: 	  "#0F42BB",
-			argument: "#44FA12",
+		Painter: &Highlighter {
+			Command:  "#375eab",
+			Quote: 	  "#1060FF",
+			Argument: "#5579BF",
 		},
 	})
 
@@ -65,6 +69,7 @@ func Start() string {
 		}
 
 		input = strings.TrimSpace(input)
+		input = utils.HomeParser(input, false)
 
 		args := strings.Split(input, " ")
 		command := args[0]
@@ -88,6 +93,8 @@ func Start() string {
 			}
 		}
 
+		_, dirs := utils.GetWorkingDirectory(true)
+		rl.SetPrompt(utils.Colorize(fmt.Sprintf("%s » ", utils.Colorize(dirs[len(dirs) - 1], "#01A0CD")), "#5579BF"))
 	}
 
 	exit:

@@ -6,9 +6,9 @@ import (
 )
 
 type Highlighter struct {
-	command  string
-	quote    string
-	argument string
+	Command  string
+	Quote    string
+	Argument string
 }
 
 func (h *Highlighter) Highlight(line string, regex string, hType string) string {
@@ -20,13 +20,13 @@ func (h *Highlighter) Highlight(line string, regex string, hType string) string 
 
 	switch hType {
 	case "command":
-		line = hReg.ReplaceAllString(line, utils.Colorize(hReg.FindString(line), h.command))
+		line = hReg.ReplaceAllString(line, utils.Colorize(hReg.FindString(line), h.Command))
 	case "pipe":
-		line = hReg.ReplaceAllString(line, "$1" + utils.Colorize("$2", h.command))
+		line = hReg.ReplaceAllString(line, "$1" + utils.Colorize("$2", h.Command))
 	case "quote":
-		line = hReg.ReplaceAllString(line, utils.Colorize("$1", h.quote))
+		line = hReg.ReplaceAllString(line, utils.Colorize("$1", h.Quote))
 	case "argument":
-		line = hReg.ReplaceAllString(line, utils.Colorize("$1", h.argument))
+		line = hReg.ReplaceAllString(line, utils.Colorize("$1", h.Argument))
 	}
 	return line
 }
